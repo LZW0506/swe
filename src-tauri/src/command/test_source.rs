@@ -33,6 +33,6 @@ use sqlx::mysql::MySqlPoolOptions;
 async fn test_mysql(username:&str,password:&str,address:AddressType,database:&str) -> Result<(), sqlx::Error> {
     let url = format!("mysql://{}:{}@{}:{}/{}",username,password,address.url,address.port,database);
     let pool = MySqlPoolOptions::new().connect(&url).await?;
-    drop(pool);
+    pool.close().await;
     Ok(())
 }
