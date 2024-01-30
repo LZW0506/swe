@@ -47,6 +47,8 @@
         <a-input v-model:value="formState.database"></a-input>
       </a-form-item>
     </a-form>
+    <a-button>测试连接</a-button>
+    
   </a-modal>
 </template>
 <script lang="ts" setup>
