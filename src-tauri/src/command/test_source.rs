@@ -18,7 +18,7 @@ pub fn test_data_source(source_type: &str,username:&str,password:&str,address:Ad
     }
 
 }
-
+// 测试mysql是否可以连接成功
 use sqlx::mysql::MySqlPoolOptions;
 #[tokio::main]
 async fn test_mysql(username:&str,password:&str,address:AddressType,database:&str) -> Result<(), sqlx::Error> {
