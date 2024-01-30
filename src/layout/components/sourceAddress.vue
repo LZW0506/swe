@@ -15,19 +15,12 @@
 </template>
 
 <script lang="ts">
-import type {PropType} from 'vue';
 import {defineComponent} from 'vue';
 import {Form} from 'ant-design-vue';
 
-
-interface PriceValue {
-  url: string;
-  port: number | string;
-}
-
 export default defineComponent({
   props: {
-    value: {type: Object as PropType<PriceValue>, required: true},
+    value: {type: Object, required: true},
   },
   emits: ['update:value'],
   setup(props, {emit}) {
