@@ -5,9 +5,11 @@
 
 mod command;
 
+use command::{test_source,source_db};
+
 fn main() {
     tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![command::test_source::test_data_source])
+        .invoke_handler(tauri::generate_handler![test_source::test_data_source,source_db::query_table_info])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

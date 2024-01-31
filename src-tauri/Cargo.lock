@@ -341,8 +341,10 @@ checksum = "9f13690e35a5e4ace198e7beea2895d29f3a9cc55015fcebe6336bd2010af9eb"
 dependencies = [
  "android-tzdata",
  "iana-time-zone",
+ "js-sys",
  "num-traits",
  "serde",
+ "wasm-bindgen",
  "windows-targets 0.52.0",
 ]
 
@@ -3205,6 +3207,7 @@ checksum = "81cdd64d312baedb58e21336b31bc043b77e01cc99033ce76ef539f78e965ebc"
 name = "swe"
 version = "0.0.0"
 dependencies = [
+ "chrono",
  "serde",
  "serde_json",
  "sqlx",

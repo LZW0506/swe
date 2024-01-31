@@ -1,12 +1,12 @@
-export interface FormState {
-    sourceType: string,
-    username: string,
-    password: string,
-    address: {
-        url: string,
-        port: number | String,
-        icon: string
-    },
-    database: string,
-    name: string
+import type {VNode} from "vue";
+
+
+export interface menuItemType {
+    key: string | number,
+    icon: VNode | string,
+    label: string
+}
+
+export interface editMenuItemType extends menuItemType {
+    uuid: string
 }

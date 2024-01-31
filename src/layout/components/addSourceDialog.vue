@@ -1,5 +1,6 @@
 <template>
-  <a-modal v-model:open="newOpen" :confirm-loading="confirmLoading" :keyboard="false" :maskClosable="false" title="添加数据源"
+  <a-modal v-model:open="newOpen" :confirm-loading="confirmLoading" :keyboard="false" :maskClosable="false"
+           title="添加数据源"
            @cancel="resetForm" @ok="handleOk">
     <a-form ref="formRef" :labelCol="{ span: 4 }" :model="formState" :rules="rules" labelAlign="right">
       <a-form-item label="数据类型" name="sourceType">
@@ -22,7 +23,7 @@
         <a-input v-model:value="formState.username"></a-input>
       </a-form-item>
       <a-form-item label="密码" name="password">
-        <a-input v-model:value="formState.password" type="password"></a-input>
+        <a-input-password v-model:value="formState.password" type="password"></a-input-password>
       </a-form-item>
       <a-form-item label="数据库" name="database">
         <a-input v-model:value="formState.database"></a-input>
@@ -33,18 +34,17 @@
   </a-modal>
 </template>
 <script lang="ts" setup>
-import {computed, reactive, ref} from 'vue';
+import {computed, reactive, ref, watch} from 'vue';
 import type {Rule} from 'ant-design-vue/es/form';
 import SourceAddress from "./sourceAddress.vue";
 import {invoke} from "@tauri-apps/api/tauri";
 import {message} from "ant-design-vue";
 import {sourceDb} from "../../utils/localforage.ts";
-import {v4 as uuidv4} from 'uuid';
-import {FormState} from "../types";
+import {v4 as uuidv4} from "uuid";
 import SvgIcon from "../../components/SvgIcon.vue";
+import {FormState} from "../../types/source.ts";
 
 const confirmLoading = ref<boolean>(false);
-
 const formRef = ref()
 const checkUrl = (_: any, value: { url: string }) => {
   if (value.url) {
@@ -77,19 +77,24 @@ const props = defineProps({
   modelValue: {
     type: Boolean,
     required: true
-  }
+  },
+  editData: null
 })
 
 const sourceList = ref([{
   icon: 'swemysql',
   key: 'Mysql',
-  label: 'mysql',
   port: '3306'
 }])
 
-
+watch(() => props.modelValue, (v) => {
+  if (v && props.editData) {
+    for (let editDatum in props.editData) {
+      formState[editDatum] = <FormState>props.editData[editDatum]
+    }
+  }
+})
 const testLoading = ref<boolean>(false)
-
 const formState = reactive<FormState>({
   sourceType: '',
   username: '',
@@ -107,17 +112,30 @@ const handleOk = () => {
       .validate()
       .then(async () => {
         confirmLoading.value = true;
-        sourceDb.setItem(uuidv4(), JSON.stringify(formState)).then(function () {
-          // 当值被存储后，可执行其他操作
-          message.success("保存成功")
-          resetForm()
-          emit('getList');
-        }).catch(function (err) {
-          // 当出错时，此处代码运行
-          message.error(err.message)
-          confirmLoading.value = false;
-        });
-
+        if (formState.uuid) {
+          await sourceDb.removeItem(formState.uuid)
+          sourceDb.setItem(formState.uuid, JSON.stringify(formState)).then(function () {
+            // 当值被存储后，可执行其他操作
+            message.success("保存成功")
+            resetForm()
+            emit('getList');
+          }).catch(function (err) {
+            // 当出错时，此处代码运行
+            message.error(err.message)
+            confirmLoading.value = false;
+          });
+        } else {
+          sourceDb.setItem(uuidv4(), JSON.stringify(formState)).then(function () {
+            // 当值被存储后，可执行其他操作
+            message.success("保存成功")
+            resetForm()
+            emit('getList');
+          }).catch(function (err) {
+            // 当出错时，此处代码运行
+            message.error(err.message)
+            confirmLoading.value = false;
+          });
+        }
       })
 };
 const testConnection = () => {
