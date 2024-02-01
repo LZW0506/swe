@@ -18,7 +18,7 @@ export interface tableInfoType {
     Version: string,
     Row_format: string,
     Rows: string,
-    Create_time?: string,
+    Create_time: string,
     Collation: string,
     Comment: string,
 }

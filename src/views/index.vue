@@ -84,10 +84,11 @@ const columns = [
     dataIndex: 'Rows',
     key: 'rows'
   },
-  // {
-  //   title: '创建时间',
-  //   key: 'create_time',
-  // },
+  {
+    title: '创建时间',
+    dataIndex: 'Create_time',
+    key: 'create_time',
+  },
   {
     title: '排序',
     dataIndex: 'Collation',
@@ -123,6 +124,7 @@ const getList = () => {
     sourceData.value = JSON.parse(<string>res)
     console.log({...sourceData.value, ...searchQuery})
     invoke('query_table_info', {...sourceData.value, ...searchQuery}).then((res) => {
+      console.log(res)
       tableList.value = <tableInfoType[]>res
       queryLoading.value = false
     }).catch((e) => {
