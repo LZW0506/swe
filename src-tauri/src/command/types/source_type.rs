@@ -16,7 +16,7 @@ pub enum Source {
 }
 
 #[derive(Debug, FromRow,Serialize, Deserialize)]
-pub struct TbaleInfoType {
+pub struct TbaleListType {
   pub Name:String,
   pub Engine:String,
   pub Version:i32,
@@ -26,6 +26,22 @@ pub struct TbaleInfoType {
   pub Create_time:DateTime<Utc>,
   pub Collation:String,
   pub Comment:String,
+}
+
+
+#[derive(Debug, FromRow,Serialize, Deserialize)]
+pub struct TbaleInfoType {
+  pub Field:String,
+  pub Type:String,
+  pub Null:String,
+  pub Comment:String,
+}
+
+#[derive(Debug, FromRow,Serialize, Deserialize)]
+pub struct TbaleInfoShowType {
+  pub table_name:String,
+  pub comment:String,
+  pub info:Vec<TbaleInfoType>,
 }
 
 

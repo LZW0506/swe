@@ -17,9 +17,11 @@
       </div>
       <div class="top-search">
         <div>
-          <a-button :disabled="state.selectedRowKeys.length === 0" :icon="h(DownloadOutlined )" @click="downWord">
+          <a-button :disabled="state.selectedRowKeys.length === 0" :icon="h(DownloadOutlined )" @click="downWord" >
             导出word
           </a-button>
+
+
         </div>
         <div class="right-button">
           <a-tooltip title="刷新">
@@ -34,7 +36,6 @@
           :scroll="{ x: 1300, y: 500 }"
           bordered
           rowKey="Name">
-
       </a-table>
     </div>
   </a-spin>
@@ -51,7 +52,6 @@ import {DownloadOutlined, ReloadOutlined} from '@ant-design/icons-vue';
 
 type Key = string | number;
 const sourceStore = useSourceStore()
-
 interface searchType {
   name?: string
 }
@@ -136,10 +136,20 @@ const getList = () => {
 const onSelectChange = (selectedRowKeys: Key[]) => {
   state.selectedRowKeys = selectedRowKeys;
 };
+enum downCode {
+  success = "Success",
+  cancel = "Cancel"
+}
 const downWord = () => {
-  invoke('down_word', {...sourceData.value, names: state.selectedRowKeys}).then((_res) => {
+  queryLoading.value = true
+  invoke('down_word', {...sourceData.value, names: state.selectedRowKeys,...searchQuery}).then((res) => {
+    if(res === downCode.success){
+      message.success("导出成功！")
+    }
+    queryLoading.value = false
   }).catch((e) => {
     message.error(e)
+    queryLoading.value = false
   })
 }
 </script>
