@@ -1,9 +1,8 @@
-import type {VNode} from "vue";
 
 
 export interface menuItemType {
     key: string | number,
-    icon: VNode | string,
+    icon:  string,
     label: string
 }
 
