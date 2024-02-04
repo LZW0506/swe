@@ -40,10 +40,11 @@ import {Empty, message} from "ant-design-vue";
 import {computed, onMounted, ref} from "vue";
 import AddSourceDialog from "./components/addSourceDialog.vue";
 import {sourceDb} from "../utils/localforage.ts";
-import {editMenuItemType, FormState, menuItemType} from "./types";
+import {editMenuItemType, menuItemType} from "./types";
 import SvgIcon from "../components/SvgIcon.vue";
 import {useSourceStore} from "../stores/modules/source.ts";
 import {DeleteOutlined, EditOutlined} from '@ant-design/icons-vue';
+import {FormState} from "../types/source.ts";
 
 const simpleImage = Empty.PRESENTED_IMAGE_SIMPLE;
 

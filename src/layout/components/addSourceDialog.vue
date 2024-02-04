@@ -78,7 +78,8 @@ const props = defineProps({
     type: Boolean,
     required: true
   },
-  editData: null
+  editData: null,
+  type:Object,
 })
 
 const sourceList = ref([{
@@ -90,12 +91,12 @@ const sourceList = ref([{
 watch(() => props.modelValue, (v) => {
   if (v && props.editData) {
     for (let editDatum in props.editData) {
-      formState[editDatum] = <FormState>props.editData[editDatum]
+      formState[editDatum] = props.editData[editDatum]
     }
   }
 })
 const testLoading = ref<boolean>(false)
-const formState = reactive<FormState>({
+const formState = reactive<FormState | any>({
   sourceType: '',
   username: '',
   password: '',

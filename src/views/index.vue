@@ -137,7 +137,7 @@ const onSelectChange = (selectedRowKeys: Key[]) => {
   state.selectedRowKeys = selectedRowKeys;
 };
 const downWord = () => {
-  invoke('down_word', {...sourceData.value, names: state.selectedRowKeys}).then((res) => {
+  invoke('down_word', {...sourceData.value, names: state.selectedRowKeys}).then((_res) => {
   }).catch((e) => {
     message.error(e)
   })
