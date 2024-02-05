@@ -2,14 +2,14 @@
   <a-spin :spinning="queryLoading">
     <div class="show-content">
       <div class="search-input">
-        <a-form :model="searchQuery" layout="inline">
+        <a-form :model="searchQuery" layout="inline" ref="searchRef">
           <a-form-item label="表名" name="name">
             <a-input v-model:value="searchQuery.name"></a-input>
           </a-form-item>
           <a-form-item>
             <a-space>
               <a-button type="primary" @click="getList">搜索</a-button>
-              <a-button>重置</a-button>
+              <a-button @click="reset">重置</a-button>
             </a-space>
 
           </a-form-item>
@@ -20,8 +20,6 @@
           <a-button :disabled="state.selectedRowKeys.length === 0" :icon="h(DownloadOutlined )" @click="downWord" >
             导出word
           </a-button>
-
-
         </div>
         <div class="right-button">
           <a-tooltip title="刷新">
@@ -43,13 +41,13 @@
 </template>
 <script lang="ts" setup>
 import {useSourceStore} from "../stores/modules/source.ts";
-import {h, reactive, ref, watch} from "vue";
+import {h, nextTick, reactive, ref, watch} from "vue";
 import {FormState, tableInfoType} from "../types/source.ts";
 import {sourceDb} from "../utils/localforage.ts";
 import {invoke} from "@tauri-apps/api/tauri";
 import {message} from "ant-design-vue";
 import {DownloadOutlined, ReloadOutlined} from '@ant-design/icons-vue';
-
+const searchRef = ref()
 type Key = string | number;
 const sourceStore = useSourceStore()
 interface searchType {
@@ -108,7 +106,11 @@ const queryLoading = ref<boolean>(false)
 watch(() => sourceStore.selectKey, (v) => {
   if (v) {
     key.value = v
-    getList()
+    nextTick(()=>{
+      searchRef.value.resetFields()
+      getList()
+    })
+
   }
 })
 const state = reactive<{
@@ -119,12 +121,11 @@ const state = reactive<{
   loading: false,
 });
 const getList = () => {
+  state.selectedRowKeys = []
   queryLoading.value = true
   sourceDb.getItem(<string>key.value).then((res) => {
     sourceData.value = JSON.parse(<string>res)
-    console.log({...sourceData.value, ...searchQuery})
     invoke('query_table_info', {...sourceData.value, ...searchQuery}).then((res) => {
-      console.log(res)
       tableList.value = <tableInfoType[]>res
       queryLoading.value = false
     }).catch((e) => {
@@ -132,6 +133,10 @@ const getList = () => {
       queryLoading.value = false
     })
   })
+}
+const reset = () => {
+  searchRef.value.resetFields()
+  getList()
 }
 const onSelectChange = (selectedRowKeys: Key[]) => {
   state.selectedRowKeys = selectedRowKeys;

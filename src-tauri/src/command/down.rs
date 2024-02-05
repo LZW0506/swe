@@ -1,14 +1,12 @@
 
 #[path ="types/mod.rs"]
 mod types;
-use std::fmt::format;
 
+use docx_rs::*;
 use rfd::FileDialog;
 use serde::Serialize;
 use types::source_type;
-use docx::Docx;
-use docx::document::*;
-use docx::formatting::*;
+
 #[derive(Serialize)]
 pub enum DownCode {
     Success,Cancel
@@ -81,31 +79,44 @@ async fn query_tabel_info(username:&str,password:&str,address:source_type::Addre
 }
 
 fn export_word(table_list:Vec<source_type::TbaleInfoShowType>,file_path:String){
-     
-    let mut docx = Docx::default();
+    let file = std::fs::File::create(&file_path).unwrap();
+    let mut document = Document::new();
     for table_item in table_list{
-        let header_row = TableRow::default()
-            .property(TableRowProperty::default())
-            .push_cell(Paragraph::default().push_text("名称"))
-            .push_cell(Paragraph::default().push_text("类型"))
-            .push_cell(Paragraph::default().push_text("是否为Null"))
-            .push_cell(Paragraph::default().push_text("备注"));
-        let tbl: Table<'_> = Table::default()
-          .push_row(header_row);
+        // 标题（表名加备注）
+        let title = Paragraph::new().add_run(Run::new().add_text(format!("{} {}",table_item.table_name,table_item.comment)).size(24));
+        document.children.push(docx_rs::DocumentChild::Paragraph(Box::new(title)));
+        // 表格
+        let mut row_list :Vec<TableRow> = vec![];
+        // 添加表头
+        let header_row:TableRow = TableRow::new(vec![
+            TableCell::new().add_paragraph(Paragraph::new().add_run(Run::new().add_text("名称"))),
+            TableCell::new().add_paragraph(Paragraph::new().add_run(Run::new().add_text("类型"))),
+            TableCell::new().add_paragraph(Paragraph::new().add_run(Run::new().add_text("默认值"))),
+            TableCell::new().add_paragraph(Paragraph::new().add_run(Run::new().add_text("是否可空"))),
+            TableCell::new().add_paragraph(Paragraph::new().add_run(Run::new().add_text("备注"))),
+        ]);
+        // 添加每一行的数据
+        row_list.push(header_row.clone());
         for table_info in table_item.info{
-            let row = TableRow::default()
-                .property(TableRowProperty::default())
-                .push_cell(Paragraph::default().push_text(format!("{}",table_info.Field)))
-                .push_cell(Paragraph::default().push_text(format!("{}",table_info.Type)))
-                .push_cell(Paragraph::default().push_text(format!("{}",table_info.Null)))
-                .push_cell(Paragraph::default().push_text(format!("{}",table_info.Comment)));
-            //  tbl.push_row(row);
+            let mut cell:Vec<TableCell> = vec![];
+            cell.push(TableCell::new().add_paragraph(Paragraph::new().add_run(Run::new().add_text(table_info.Field))));
+            cell.push(TableCell::new().add_paragraph(Paragraph::new().add_run(Run::new().add_text(table_info.Type))));
+            cell.push(TableCell::new().add_paragraph(Paragraph::new().add_run(Run::new().add_text(
+                match table_info.Default {
+                    Some(s) => s.to_string(),
+                    None => "".to_string(),
+                }
+            ))));
+            cell.push(TableCell::new().add_paragraph(Paragraph::new().add_run(Run::new().add_text(table_info.Null))));
+            cell.push(TableCell::new().add_paragraph(Paragraph::new().add_run(Run::new().add_text(table_info.Comment))));
+            row_list.push(TableRow::new(cell))
         }
-        // create a new paragraph and insert it
-        let para = Paragraph::default().push_text(format!("{} {}",table_item.table_name,table_item.comment));
-        docx.document.push(para);
-        // docx.document.push(tbl);
+        let table = Table::new(row_list);
+        document.children.push(docx_rs::DocumentChild::Table(Box::new(table)));
+        // 加个空白行
+        document.children.push(docx_rs::DocumentChild::Paragraph(Box::new(Paragraph::new())));
+
     }
 
-    docx.write_file(file_path).unwrap();
+    let _ = Docx::new().document(document).build().pack(file);
 }

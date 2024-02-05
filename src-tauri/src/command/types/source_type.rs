@@ -15,11 +15,13 @@ pub enum Source {
     Mysql
 }
 
+
+  
 #[derive(Debug, FromRow,Serialize, Deserialize)]
 pub struct TbaleListType {
   pub Name:String,
   pub Engine:String,
-  pub Version:i32,
+  pub Version:u64,
   pub Row_format:String,
   pub Rows: u64,
   #[serde(with = "date_format")]
@@ -28,11 +30,11 @@ pub struct TbaleListType {
   pub Comment:String,
 }
 
-
 #[derive(Debug, FromRow,Serialize, Deserialize)]
 pub struct TbaleInfoType {
   pub Field:String,
   pub Type:String,
+  pub Default:Option<String>,
   pub Null:String,
   pub Comment:String,
 }
@@ -80,3 +82,4 @@ mod date_format {
       Ok(DateTime::<Utc>::from_naive_utc_and_offset(dt, Utc))
   }
 }
+
