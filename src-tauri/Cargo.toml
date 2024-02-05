@@ -24,10 +24,8 @@ sqlx = {version = "0.7", default_features = false, features = [
 ] }
 chrono = "0.4"
 tokio = { version = "1", features = ["full"] }
-docx-rs = "0.4"
-rfd = "0.4"
-
-
+rfd = "0.10"
+docx = "1.1"
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem
 # DO NOT REMOVE!!

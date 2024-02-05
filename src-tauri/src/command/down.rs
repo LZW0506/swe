@@ -1,11 +1,14 @@
 
 #[path ="types/mod.rs"]
 mod types;
+use std::fmt::format;
+
 use rfd::FileDialog;
 use serde::Serialize;
 use types::source_type;
-use docx_rs::*;
-
+use docx::Docx;
+use docx::document::*;
+use docx::formatting::*;
 #[derive(Serialize)]
 pub enum DownCode {
     Success,Cancel
@@ -19,9 +22,7 @@ pub async fn down_word(source_type: source_type::Source,username:&str,password:&
 
     // 先打开选择窗口
     if let Some(folder_path) = FileDialog::new().pick_folder() {
-        let file_path = String::from(format!("{}/table.docx",folder_path.display()));
-        let path = std::path::Path::new(file_path.as_str());
-        let file = std::fs::File::create(&path).unwrap();
+        let file_path = String::from(format!("{}/table_info.docx",folder_path.display()));
         let test_re:Result<Vec<source_type::TbaleInfoShowType>, sqlx::Error>;
         // 查询表结构
         match source_type {
@@ -29,7 +30,7 @@ pub async fn down_word(source_type: source_type::Source,username:&str,password:&
         }
         match test_re {
             Ok(table_list) => {
-                export_word(table_list);
+                export_word(table_list,file_path);
                 Ok(DownCode::Success)
             },
             Err(err) => Err(format!("{}",err))
@@ -79,9 +80,32 @@ async fn query_tabel_info(username:&str,password:&str,address:source_type::Addre
     Ok(table_info_list)
 }
 
-fn export_word(table_list:Vec<source_type::TbaleInfoShowType>){
-    let docx = Docx::new();
-    for table_item in table_list  {
-        
+fn export_word(table_list:Vec<source_type::TbaleInfoShowType>,file_path:String){
+     
+    let mut docx = Docx::default();
+    for table_item in table_list{
+        let header_row = TableRow::default()
+            .property(TableRowProperty::default())
+            .push_cell(Paragraph::default().push_text("名称"))
+            .push_cell(Paragraph::default().push_text("类型"))
+            .push_cell(Paragraph::default().push_text("是否为Null"))
+            .push_cell(Paragraph::default().push_text("备注"));
+        let tbl: Table<'_> = Table::default()
+          .push_row(header_row);
+        for table_info in table_item.info{
+            let row = TableRow::default()
+                .property(TableRowProperty::default())
+                .push_cell(Paragraph::default().push_text(format!("{}",table_info.Field)))
+                .push_cell(Paragraph::default().push_text(format!("{}",table_info.Type)))
+                .push_cell(Paragraph::default().push_text(format!("{}",table_info.Null)))
+                .push_cell(Paragraph::default().push_text(format!("{}",table_info.Comment)));
+            //  tbl.push_row(row);
+        }
+        // create a new paragraph and insert it
+        let para = Paragraph::default().push_text(format!("{} {}",table_item.table_name,table_item.comment));
+        docx.document.push(para);
+        // docx.document.push(tbl);
     }
+
+    docx.write_file(file_path).unwrap();
 }
