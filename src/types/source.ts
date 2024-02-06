@@ -13,12 +13,12 @@ export interface FormState {
 }
 
 export interface tableInfoType {
-    Name: string,
-    Engine: string,
-    Version: string,
-    Row_format: string,
-    Rows: string,
-    Create_time: string,
-    Collation: string,
-    Comment: string,
+    name: string,
+    engine: string,
+    // Version: string,
+    row_format: string,
+    rows: string,
+    create_time: string,
+    collation: string,
+    comment: string,
 }

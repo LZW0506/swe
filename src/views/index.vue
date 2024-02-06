@@ -33,7 +33,7 @@
           :row-selection="{ selectedRowKeys: state.selectedRowKeys, onChange: onSelectChange }"
           :scroll="{ x: 1300, y: 500 }"
           bordered
-          rowKey="Name">
+          rowKey="name">
       </a-table>
     </div>
   </a-spin>
@@ -60,41 +60,41 @@ const searchQuery = reactive<searchType>({
 const columns = [
   {
     title: '表名',
-    dataIndex: 'Name',
+    dataIndex: 'name',
     key: 'name'
   },
   {
     title: '引擎',
-    dataIndex: 'Engine',
+    dataIndex: 'engine',
     key: 'engine'
   },
-  {
-    title: '版本',
-    dataIndex: 'Version',
-    key: 'version'
-  },
+  // {
+  //   title: '版本',
+  //   dataIndex: 'Version',
+  //   key: 'version'
+  // },
   {
     title: '格式',
-    dataIndex: 'Row_format',
+    dataIndex: 'row_format',
     key: 'row_format'
   }, {
     title: '行数',
-    dataIndex: 'Rows',
+    dataIndex: 'rows',
     key: 'rows'
   },
   {
     title: '创建时间',
-    dataIndex: 'Create_time',
+    dataIndex: 'create_time',
     key: 'create_time',
   },
   {
     title: '排序',
-    dataIndex: 'Collation',
+    dataIndex: 'collation',
     key: 'collation'
 
   }, {
     title: '注释',
-    dataIndex: 'Comment',
+    dataIndex: 'comment',
     fixed: 'right',
     key: 'comment'
   },
@@ -108,6 +108,7 @@ watch(() => sourceStore.selectKey, (v) => {
     key.value = v
     nextTick(()=>{
       searchRef.value.resetFields()
+      tableList.value = []
       getList()
     })
 
@@ -147,6 +148,7 @@ enum downCode {
 }
 const downWord = () => {
   queryLoading.value = true
+  console.log(state.selectedRowKeys)
   invoke('down_word', {...sourceData.value, names: state.selectedRowKeys,...searchQuery}).then((res) => {
     if(res === downCode.success){
       message.success("导出成功！")

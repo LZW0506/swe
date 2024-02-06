@@ -19,31 +19,46 @@ pub enum Source {
   
 #[derive(Debug, FromRow,Serialize, Deserialize)]
 pub struct TbaleListType {
-  pub Name:String,
-  pub Engine:String,
-  pub Version:u64,
-  pub Row_format:String,
-  pub Rows: u64,
+  #[sqlx(rename = "Name")] // 表名
+  pub name:String,
+  #[sqlx(rename = "Engine")] 
+  pub engine:String,
+  // pub Version:u64,
+  #[sqlx(rename = "Row_format")]
+  pub row_format:String,
+  #[sqlx(rename = "Rows")]
+  pub rows: u64,
   #[serde(with = "date_format")]
-  pub Create_time:DateTime<Utc>,
-  pub Collation:String,
-  pub Comment:String,
+  #[sqlx(rename = "Create_time")]
+  pub create_time:DateTime<Utc>,
+  #[sqlx(rename = "Collation")]
+  pub collation:String,
+  #[sqlx(rename = "Comment")]
+  pub comment:String,
 }
 
+
 #[derive(Debug, FromRow,Serialize, Deserialize)]
-pub struct TbaleInfoType {
-  pub Field:String,
-  pub Type:String,
-  pub Default:Option<String>,
-  pub Null:String,
-  pub Comment:String,
+#[serde(rename_all = "camelCase")]
+pub struct TableInfoType {
+  #[sqlx(rename = "Field")]
+  pub field:String,
+  #[sqlx(rename = "Type")]
+  pub field_type:String,
+  #[sqlx(rename = "Default")]
+  pub default:Option<String>,
+  #[sqlx(rename = "Null")]
+  pub null:String,
+  #[sqlx(rename = "Comment")]
+  pub comment:String,
 }
+
 
 #[derive(Debug, FromRow,Serialize, Deserialize)]
 pub struct TbaleInfoShowType {
   pub table_name:String,
   pub comment:String,
-  pub info:Vec<TbaleInfoType>,
+  pub info:Vec<TableInfoType>,
 }
 
 
@@ -82,4 +97,3 @@ mod date_format {
       Ok(DateTime::<Utc>::from_naive_utc_and_offset(dt, Utc))
   }
 }
-

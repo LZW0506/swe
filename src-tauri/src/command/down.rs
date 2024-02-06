@@ -24,7 +24,7 @@ pub async fn down_word(source_type: source_type::Source,username:&str,password:&
         let test_re:Result<Vec<source_type::TbaleInfoShowType>, sqlx::Error>;
         // 查询表结构
         match source_type {
-            source_type::Source::Mysql =>test_re = query_tabel_info(username,password,address,database,name,names).await
+            source_type::Source::Mysql =>test_re = query_table_info(username,password,address,database,name,names).await
         }
         match test_re {
             Ok(table_list) => {
@@ -41,7 +41,7 @@ pub async fn down_word(source_type: source_type::Source,username:&str,password:&
 }
 // // 连接mysql并导出表信息
 use sqlx::{mysql::MySqlPoolOptions, query_as};
-async fn query_tabel_info(username:&str,password:&str,address:source_type::AddressType,database:&str,name:&str,names:Vec<String>)-> Result<Vec<source_type::TbaleInfoShowType>, sqlx::Error> {
+async fn query_table_info(username:&str,password:&str,address:source_type::AddressType,database:&str,name:&str,names:Vec<String>)-> Result<Vec<source_type::TbaleInfoShowType>, sqlx::Error> {
     let url = format!("mysql://{}:{}@{}:{}/{}",username,password,address.url,address.port,database);
     let pool = MySqlPoolOptions::new().max_connections(5).connect(&url).await?;
      // 查询数据库中的所有表
@@ -51,7 +51,7 @@ async fn query_tabel_info(username:&str,password:&str,address:source_type::Addre
     let mut table_info_list:Vec<source_type::TbaleInfoShowType> = vec![];
     // 遍历所有表，查询表结构信息并导出到文件
     for table_row in tables_result {
-        let table_name: String = table_row.Name; 
+        let table_name: String = table_row.name; 
         // 如果没选中就不查询这个表结构
         if names.len() >0 && !names.contains(&table_name){
             continue;
@@ -64,11 +64,11 @@ async fn query_tabel_info(username:&str,password:&str,address:source_type::Addre
             table_name
         );
 
-        let columns_result = query_as::<_,source_type::TbaleInfoType>(&columns_query).fetch_all(&pool).await?;
+        let columns_result = query_as::<_,source_type::TableInfoType>(&columns_query).fetch_all(&pool).await?;
         // 获取到是哪个表， 他的备注和表名
         let info: source_type::TbaleInfoShowType = source_type::TbaleInfoShowType{
             table_name:table_name,
-            comment: table_row.Comment,
+            comment: table_row.comment,
             info: columns_result,
         };
         table_info_list.push(info);
@@ -99,16 +99,16 @@ fn export_word(table_list:Vec<source_type::TbaleInfoShowType>,file_path:String){
         row_list.push(header_row.clone());
         for table_info in table_item.info{
             let mut cell:Vec<TableCell> = vec![];
-            cell.push(TableCell::new().add_paragraph(Paragraph::new().add_run(Run::new().add_text(table_info.Field))));
-            cell.push(TableCell::new().add_paragraph(Paragraph::new().add_run(Run::new().add_text(table_info.Type))));
+            cell.push(TableCell::new().add_paragraph(Paragraph::new().add_run(Run::new().add_text(table_info.field))));
+            cell.push(TableCell::new().add_paragraph(Paragraph::new().add_run(Run::new().add_text(table_info.field_type))));
             cell.push(TableCell::new().add_paragraph(Paragraph::new().add_run(Run::new().add_text(
-                match table_info.Default {
+                match table_info.default {
                     Some(s) => s.to_string(),
                     None => "".to_string(),
                 }
             ))));
-            cell.push(TableCell::new().add_paragraph(Paragraph::new().add_run(Run::new().add_text(table_info.Null))));
-            cell.push(TableCell::new().add_paragraph(Paragraph::new().add_run(Run::new().add_text(table_info.Comment))));
+            cell.push(TableCell::new().add_paragraph(Paragraph::new().add_run(Run::new().add_text(table_info.null))));
+            cell.push(TableCell::new().add_paragraph(Paragraph::new().add_run(Run::new().add_text(table_info.comment))));
             row_list.push(TableRow::new(cell))
         }
         let table = Table::new(row_list);

@@ -33,5 +33,11 @@ export default defineConfig(async () => ({
     alias: {
     }
   },
-
+  css:{
+    preprocessorOptions:{
+      less:{
+        javascriptEnabled: true
+      }
+    }
+  }
 }));
