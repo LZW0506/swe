@@ -38,6 +38,7 @@ pub struct TbaleListType {
 }
 
 
+
 #[derive(Debug, FromRow,Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct TableInfoType {
