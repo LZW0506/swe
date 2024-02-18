@@ -18,12 +18,13 @@ pub enum Source {
 
   
 #[derive(Debug, FromRow,Serialize, Deserialize)]
-pub struct TbaleListType {
+pub struct TableListType {
   #[sqlx(rename = "Name")] // 表名
   pub name:String,
   #[sqlx(rename = "Engine")] 
   pub engine:String,
-  // pub Version:u64,
+  // #[sqlx(rename = "Version")]
+  // pub version:u64,
   #[sqlx(rename = "Row_format")]
   pub row_format:String,
   #[sqlx(rename = "Rows")]
@@ -56,18 +57,12 @@ pub struct TableInfoType {
 
 
 #[derive(Debug, FromRow,Serialize, Deserialize)]
-pub struct TbaleInfoShowType {
+pub struct TableInfoShowType {
   pub table_name:String,
   pub comment:String,
   pub info:Vec<TableInfoType>,
 }
 
-
-// #[derive(Debug,Deserialize,Serialize)]
-// pub struct TbaleInfoTypeOut {
-//   pub data:TbaleInfoType,
-//   pub total:usize
-// }
 
 
 mod date_format {

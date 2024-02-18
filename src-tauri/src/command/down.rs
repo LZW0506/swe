@@ -21,7 +21,7 @@ pub async fn down_word(source_type: source_type::Source,username:&str,password:&
     // 先打开选择窗口
     if let Some(folder_path) = FileDialog::new().pick_folder() {
         let file_path = String::from(format!("{}/table_info.docx",folder_path.display()));
-        let test_re:Result<Vec<source_type::TbaleInfoShowType>, sqlx::Error>;
+        let test_re:Result<Vec<source_type::TableInfoShowType>, sqlx::Error>;
         // 查询表结构
         match source_type {
             source_type::Source::Mysql =>test_re = query_table_info(username,password,address,database,name,names).await
@@ -41,14 +41,14 @@ pub async fn down_word(source_type: source_type::Source,username:&str,password:&
 }
 // // 连接mysql并导出表信息
 use sqlx::{mysql::MySqlPoolOptions, query_as};
-async fn query_table_info(username:&str,password:&str,address:source_type::AddressType,database:&str,name:&str,names:Vec<String>)-> Result<Vec<source_type::TbaleInfoShowType>, sqlx::Error> {
+async fn query_table_info(username:&str,password:&str,address:source_type::AddressType,database:&str,name:&str,names:Vec<String>)-> Result<Vec<source_type::TableInfoShowType>, sqlx::Error> {
     let url = format!("mysql://{}:{}@{}:{}/{}",username,password,address.url,address.port,database);
     let pool = MySqlPoolOptions::new().max_connections(5).connect(&url).await?;
      // 查询数据库中的所有表
     let tables_query  = format!("show table status like '%{}%'",name);
 
-    let tables_result = query_as::<_,source_type::TbaleListType>(tables_query.as_str()).fetch_all(&pool).await?;
-    let mut table_info_list:Vec<source_type::TbaleInfoShowType> = vec![];
+    let tables_result = query_as::<_,source_type::TableListType>(tables_query.as_str()).fetch_all(&pool).await?;
+    let mut table_info_list:Vec<source_type::TableInfoShowType> = vec![];
     // 遍历所有表，查询表结构信息并导出到文件
     for table_row in tables_result {
         let table_name: String = table_row.name; 
@@ -66,8 +66,8 @@ async fn query_table_info(username:&str,password:&str,address:source_type::Addre
 
         let columns_result = query_as::<_,source_type::TableInfoType>(&columns_query).fetch_all(&pool).await?;
         // 获取到是哪个表， 他的备注和表名
-        let info: source_type::TbaleInfoShowType = source_type::TbaleInfoShowType{
-            table_name:table_name,
+        let info: source_type::TableInfoShowType = source_type::TableInfoShowType{
+            table_name,
             comment: table_row.comment,
             info: columns_result,
         };
@@ -78,7 +78,7 @@ async fn query_table_info(username:&str,password:&str,address:source_type::Addre
     Ok(table_info_list)
 }
 
-fn export_word(table_list:Vec<source_type::TbaleInfoShowType>,file_path:String){
+fn export_word(table_list:Vec<source_type::TableInfoShowType>,file_path:String){
     let file = std::fs::File::create(&file_path).unwrap();
     let mut document = Document::new();
     for table_item in table_list{
