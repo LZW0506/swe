@@ -68,6 +68,7 @@ const getList = () => {
 const selectKey = computed(() => sourceStore.selectKey)
 // 添加数据源
 const addSource = () => {
+  editData.value = null
   openAdd.value = true
 }
 const sourceStore = useSourceStore()

@@ -33,7 +33,9 @@
           :row-selection="{ selectedRowKeys: state.selectedRowKeys, onChange: onSelectChange }"
           :scroll="{ x: 1300, y: 500 }"
           bordered
-          rowKey="name">
+          rowKey="name"
+          @change="tableChange"
+      >
       </a-table>
     </div>
   </a-spin>
@@ -158,6 +160,13 @@ const downWord = () => {
     message.error(e)
     queryLoading.value = false
   })
+}
+// interface paginationType {
+//   current: number
+//   pageSize: number
+// }
+const tableChange = () => {
+  state.selectedRowKeys = []
 }
 </script>
 <style lang="less" scoped>

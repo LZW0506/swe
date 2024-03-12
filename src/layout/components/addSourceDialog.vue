@@ -93,6 +93,8 @@ watch(() => props.modelValue, (v) => {
     for (let editDatum in props.editData) {
       formState[editDatum] = props.editData[editDatum]
     }
+  }else{
+    delete formState.uuid
   }
 })
 const testLoading = ref<boolean>(false)
