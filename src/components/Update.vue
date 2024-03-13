@@ -47,8 +47,7 @@ const update = async () => {
       confirmLoading.value = false
     }
   } catch (error) {
-    content.value = '更新失败'
-    newModelValue.value = false;
+    content.value = '更新失败：'+error
     confirmLoading.value = false
   }
 };
