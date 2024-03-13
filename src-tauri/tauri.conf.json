@@ -16,7 +16,7 @@
         "https://github.com/LZW0506/swe/releases/latest/download/latest.json"
       ],
       "windows": {
-        "installMode": "basicUi"
+        "installMode": "passive"
       },
 
       "dialog": false,
