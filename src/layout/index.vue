@@ -30,10 +30,12 @@
     <a-layout-content>
       <div style="margin-left: 20px">
         <router-view></router-view>
+        <a-layout-footer style="text-align: center">{{appName}} {{appVersion}}</a-layout-footer>
       </div>
     </a-layout-content>
   </a-layout>
   <add-source-dialog v-model="openAdd" :editData="editData" @get-list="getList"></add-source-dialog>
+  <update  v-model="showUpdate" />
 </template>
 <script lang="ts" setup>
 import {Empty, message} from "ant-design-vue";
@@ -45,6 +47,9 @@ import SvgIcon from "../components/SvgIcon.vue";
 import {useSourceStore} from "../stores/modules/source.ts";
 import {DeleteOutlined, EditOutlined} from '@ant-design/icons-vue';
 import {FormState} from "../types/source.ts";
+import {checkUpdate} from "@tauri-apps/api/updater";
+import {getName, getTauriVersion, getVersion} from "@tauri-apps/api/app";
+import Update from "../components/Update.vue";
 
 const simpleImage = Empty.PRESENTED_IMAGE_SIMPLE;
 
@@ -92,6 +97,34 @@ const editItem = (item: menuItemType) => {
     message.error(err)
   })
 }
+const appVersion = ref();
+const appName = ref();
+const tauriVersion = ref();
+
+const showUpdate = ref(false);
+
+const created = async () => {
+  try {
+    const { shouldUpdate } = await checkUpdate()
+
+    if (shouldUpdate) {
+      // 检测到新版本，显示更新组件
+      showUpdate.value = true;
+    }
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+const init = async () => {
+  appVersion.value = await getVersion();
+  appName.value = await getName();
+  tauriVersion.value = await getTauriVersion();
+};
+onMounted(() => {
+  created();
+  init();
+});
 </script>
 <style lang="less" scoped>
 .sider {

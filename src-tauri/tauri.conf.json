@@ -15,7 +15,7 @@
       "endpoints": [
         "https://github.com/LZW0506/swe/releases/download/v0.1.5/latest.json"
       ],
-      "dialog": true,
+      "dialog": false,
       "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDQ2MEEzMjBFQzFCMTZDMkUKUldRdWJMSEJEaklLUnBUUERlOGRqTmdmSzdUVEx3Y0cxTlNhbkh1QmYzbktoNHZ5OEljcDFIVm4K"
     },
     "allowlist": {
