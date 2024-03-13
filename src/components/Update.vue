@@ -1,6 +1,6 @@
 <template>
   <div>
-    <a-modal v-model:open="newModelValue" title="更新" @ok="update"  :confirm-loading="confirmLoading">
+    <a-modal v-model:open="newModelValue" title="更新" @ok="update"  :confirm-loading="confirmLoading" :closable="false" :keyboard="false" :maskClosable="false">
       <p>{{content}}</p>
     </a-modal>
   </div>
