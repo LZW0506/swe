@@ -31,7 +31,11 @@
     },
     "bundle": {
       "active": true,
-      "targets": "all",
+      "targets": [
+        "dmg",
+        "updater",
+        "exe"
+      ],
       "identifier": "com.lzw.swe",
       "icon": [
         "icons/32x32.png",
