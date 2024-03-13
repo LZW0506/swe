@@ -34,7 +34,7 @@
       "targets": [
         "dmg",
         "updater",
-        "exe"
+        "nsis"
       ],
       "identifier": "com.lzw.swe",
       "icon": [
