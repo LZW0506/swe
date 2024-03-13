@@ -1,6 +1,6 @@
 <template>
   <div>
-    <a-modal v-model:open="newModelValue" title="更新" @ok="update">
+    <a-modal v-model:open="newModelValue" title="更新" @ok="update"  >
       <p>{{content}}</p>
     </a-modal>
   </div>
@@ -8,7 +8,7 @@
 
 <script setup lang="ts">
 import { checkUpdate, installUpdate } from "@tauri-apps/api/updater";
-import { relaunch } from "@tauri-apps/api/process";
+import { relaunch } from '@tauri-apps/api/process';
 import {computed, ref, watch} from "vue";
 const emit = defineEmits(["update:modelValue"]);
 
@@ -32,6 +32,7 @@ watch(() => props.modelValue, (value) => {
 })
 const update = async () => {
   try {
+    content.value = '正在检测更新..'
     const { shouldUpdate } = await checkUpdate();
     if (shouldUpdate) {
       // 显示正在更新的提示或加载页面
