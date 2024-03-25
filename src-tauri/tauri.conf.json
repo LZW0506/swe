@@ -11,7 +11,7 @@
   },
   "tauri": {
     "updater": {
-      "active": false,
+      "active": true,
       "endpoints": [
         "https://github.com/LZW0506/swe/releases/latest/download/latest.json"
       ],
@@ -34,7 +34,7 @@
       "targets": [
         "dmg",
         "updater",
-        "nsis"
+        "msi"
       ],
       "identifier": "com.lzw.swe",
       "icon": [
